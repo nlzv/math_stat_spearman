@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+<Routine name="%MathStat.Spearman" type="MAC" languagemode="0"><![CDATA[
+
+
+ // src @dsrc@(id)=$LB(x,y)
+ // id x y set of measurements x and y, id identifies measurement in set
+ // return spearman correlation between x and y
+calc(dsrc,dtmp) public {
+ if $G(dtmp)="" S dtmp="^||MathStat.Spearman" 
+ K @dtmp
+ S nd=0
+ S id="" for {
+	S id=$O(@dsrc@(id),1,d) Q:id="" 
+	S nd=nd+1
+    S $LB(v1,v2)=d
+    S @dtmp@(1,v1,id)=""
+    S @dtmp@(2,v2,id)=""	 
+ }	
+ S v="",irang=0 for  {
+	S v=$O(@dtmp@(1,v)) Q:v=""
+	S n=0 S id="" for {
+	   S id=$O(@dtmp@(1,v,id))
+	   if id="" { 
+	      if n=1 {
+		     S $LI(@dtmp@(3,idlast),1)=irang  
+	      }
+	      else {    
+	         S irangm = irang1 + irang/2 
+	         S nbind=n
+	         S id="" for i=1:1:nbind {
+		       S id=$O(@dtmp@(1,v,id))  
+		       S $LI(@dtmp@(3,id),1)=irangm
+	         }
+	         S $LI(@dtmp@(3,idlast),3)=nbind      
+	      }   
+	      Q 
+	   }   
+	   S n=n+1
+	   S irang=irang+1
+	   if n=1 { S irang1=irang }
+	   S idlast=id	   	   
+	}	
+ }	 
+
+ S v="",irang=0 for  {
+	S v=$O(@dtmp@(2,v)) Q:v=""
+	S n=0 S id="" for {
+	   S id=$O(@dtmp@(2,v,id))
+	   if id="" { 
+	      if n=1 {
+		     S $LI(@dtmp@(3,idlast),2)=irang  
+	      }
+	      else {    
+	         S irangm = irang1 + irang/2 
+	         S nbind=n
+	         S id="" for i=1:1:nbind {
+		       S id=$O(@dtmp@(2,v,id))    
+		       S $LI(@dtmp@(3,id),2)=irangm
+	         }
+	         S $LI(@dtmp@(3,idlast),4)=nbind      
+	      }   
+	      Q 
+	   }   
+	   S n=n+1
+	   S irang=irang+1
+	   if n=1 { S irang1=irang }
+	   S idlast=id	   	   
+	}	
+ }	 
+
+ 
+ S d="",D=0,T1=0,T2=0
+ S id="" for {
+   S id=$O(@dtmp@(3,id),1,d) Q:id=""
+   S v1=$LG(d,1),v2=$LG(d,2)
+   S v=v1-v2
+   S D=v*v+D
+   S t1=$LG(d,3),t2=$LG(d,4)
+   if t1'=0 { S T1=t1*(t1*t1-1)+T1 }
+   if t2'=0 { S T2=t2*(t2*t2-1)+T2 }
+ }	 
+ 
+ S N=nd*(nd*nd-1)
+ S rs=(N-(6*D)-(T1/2)-(T2/2))/($zsqr(N-T1)*$zsqr(N-T2))
+ Q rs
+}
+]]></Routine>
+</Export>

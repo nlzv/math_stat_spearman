@@ -1,0 +1,7 @@
+Calculation of spearman for measurement series id, x, y.
+interface
+$$calc^%MathStat.Spearman(dsrc,dtmp)
+@dsrc@(id)=$LB(x,y)
+dtmp optional parameter for temporary storage
+default ^||MathStat.Spearman
+return spearman correlation.
